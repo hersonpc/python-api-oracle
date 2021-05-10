@@ -8,6 +8,8 @@ LABEL maintainer = "Herson Melo <hersonpc@gmail.com>" \
 # Set environment varibles
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV ORACLE_HOME /opt/oracle/instantclient
+ENV LD_LIBRARY_PATH /opt/oracle/instantclient
 
 # Install OS dependencies
 RUN apt-get -y update && apt-get install -y \
@@ -31,6 +33,12 @@ RUN cat /opt/oracle/env_vars >> ~/.bashrc \
     && rm -f /opt/oracle/env_vars
 
 # Install Python dependencies
-RUN pip install --no-cache-dir cx_Oracle
+RUN pip install --no-cache-dir cx_Oracle pymongo
+
+COPY src/ /api/
 
 WORKDIR /api/
+
+EXPOSE 8000
+
+ENTRYPOINT [ "uvicorn", "api_test:app", "--host", "0.0.0.0", "--port", "8000", "--reload" ]
