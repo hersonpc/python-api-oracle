@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+
+  api_core:
+    image: hersonpc/python-api-oracle:latest
+    container_name: api_core
+    environment: 
+      - ORACLE_USERNAME=${ORACLE_USERNAME}
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+      - ORACLE_SERVER=${ORACLE_SERVER}
+      - ORACLE_DATABASE=${ORACLE_DATABASE}
+    ports: 
+      - 8008:8000
+    volumes:
+      - ./src:/api/src
+    depends_on:
+      - redis
+    # command: [ "python", "api_test.py" ]
+
+  redis:
+    image: redis:alpine
+    container_name: api_redis
+    restart: always
+    ports:
+      - 6379:6379

@@ -1,2 +1,8 @@
 # python-api-oracle
-Docker Container for APIs with Oracle database connector
+
+Docker Image for APIs with Oracle database connector
+
+
+```
+docker-compose up
+```
