@@ -18,3 +18,6 @@ test:
 	curl -X 'GET' \
 		'http://localhost:8008/unidades_internacao' \
 		-H 'accept: application/json'
+
+env:
+	cp .env.example .env	
