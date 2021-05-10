@@ -14,3 +14,7 @@ Using docker-compose, you only must to execute the code above:
 ```shell
 docker-compose up
 ```
+
+## Swagger view
+
+![image](https://user-images.githubusercontent.com/14059473/117734782-89e61700-b1ca-11eb-93c6-ac2786b4272f.png)
