@@ -1,4 +1,4 @@
-import os
+import sys, os
 import cx_Oracle
 import json
 from bson import json_util
@@ -43,10 +43,22 @@ def execute(connection, sql_query):
     return(results, cursor)
 
 
+def get_internal_sqlfile_path(name):
+    path = os.path.abspath(__file__)
+    dir_path = os.path.dirname(path)
+    file_path = f'{dir_path}/sql/{name}.sql'
+    return file_path
+
+
 def read_sql(file_name):
     with open(file_name, encoding="utf-8") as f:
         sql_query = f.read()
     return(sql_query)
+
+
+def read_internal_file(name):
+    content = read_sql(get_internal_sqlfile_path(name))
+    return content
 
 
 def execute_file(connection, file_name):
@@ -70,30 +82,31 @@ def sql(sql_query, verbose = False):
     return(dataset)
 
 
-def cache_or_sql(key, sql_query, timeout = 60):
-    if(redis.exists(key)):
+def cache_or_sql(key, sql_query, nocache = False, timeout = 60):
+    if(not nocache and redis.exists(key)):
         print(f'<< Read from cache :: {key}')
-        dataset = json.loads(redis.get(key).decode('utf-8'), object_hook=json_util.object_hook)
+        dataset = json.loads(redis.get(key).decode('utf-8'), object_hook = json_util.object_hook)
     else:
         print(f'<< Read from DB :: {key}')
         dataset = sql(sql_query)
-        redis.set(key, json.dumps(dataset, default=json_util.default), ex = timeout)
+        redis.set(key, json.dumps(dataset, default = json_util.default), ex = timeout)
     return(dataset)
 
 
-
-def sql_file(sql_filename, verbose = False, timeout = 30):
+def cache_or_execute_sqlfile(filename, verbose = False, nocache = False, cache_timeout = 600):
+    sql_filename = get_internal_sqlfile_path(filename)
+    
     connection = connect()
     started_at = datetime.now()
     if(verbose):
         print(f"- Started sql query at {started_at:%Y-%m-%d_%H:%M:%S.%f }")
-    if(redis.exists(sql_filename)):
-        print(f'<< Read from cache :: {sql_filename}')
-        dataset = json.loads(redis.get(sql_filename).decode('utf-8'), object_hook=json_util.object_hook)
+    if(not nocache and redis.exists(filename)):
+        print(f'<< Read from cache :: {filename}')
+        dataset = json.loads(redis.get(filename).decode('utf-8'), object_hook = json_util.object_hook)
     else:
-        print(f'<< Read from DB :: {sql_filename}')
+        print(f'<< Read from DB :: {filename}')
         dataset, cursor = execute_file(connection, sql_filename)
-        redis.set(sql_filename, json.dumps(dataset, default=json_util.default), ex = timeout)
+        redis.set(filename, json.dumps(dataset, default = json_util.default), ex = cache_timeout)
     if(verbose):
         print(f"- Elapsed time: {(datetime.now() - started_at).total_seconds()} secs")
     

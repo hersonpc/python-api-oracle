@@ -1,6 +1,9 @@
 build:
 	docker build -t hersonpc/python-api-oracle .
 
+prod:
+	docker build --no-cache -t hersonpc/python-api-oracle .
+
 bash:
 	docker run -it --rm --name python-oracle -p 8001:8000 hersonpc/python-api-oracle bash
 

@@ -13,7 +13,7 @@ services:
     ports: 
       - 8008:8000
     volumes:
-      - ./src:/api/src
+      - ./src:/api/
     depends_on:
       - redis
     # command: [ "python", "api_test.py" ]

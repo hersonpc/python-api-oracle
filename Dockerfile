@@ -3,7 +3,7 @@ FROM hersonpc/python-api
 
 LABEL maintainer = "Herson Melo <hersonpc@gmail.com>" \
       name = "python-api-oracle" \
-      version = "0.1"
+      version = "0.1.2"
 
 # Set environment varibles
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -17,6 +17,9 @@ RUN apt-get -y update && apt-get install -y \
     unzip \
     python-dev \
     libaio-dev \
+    curl \
+    htop \
+    nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/
 
@@ -33,7 +36,7 @@ RUN cat /opt/oracle/env_vars >> ~/.bashrc \
     && rm -f /opt/oracle/env_vars
 
 # Install Python dependencies
-RUN pip install --no-cache-dir cx_Oracle pymongo
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ /api/
 
