@@ -97,3 +97,9 @@ app.openapi = custom_openapi
 
 if __name__ == "__main__":
     print("="*3, f"API Core v{core_version}", "="*60)
+    # uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, 
+                host="0.0.0.0", 
+                port = 8001,
+                log_level = "info",
+                reload = True)
