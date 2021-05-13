@@ -1,3 +1,4 @@
+from os.path import normcase
 import uvicorn
 import os, time
 from fastapi import FastAPI, Depends, Request, Response, status
@@ -5,6 +6,7 @@ from fastapi.openapi.utils import get_openapi
 import mv_database as mv
 import mv.hospitais as hospitais
 import mv.unidades_internacao as unidades
+import mv.sinais_vitais as sinais_vitais
 
 app = FastAPI()
 
@@ -62,11 +64,11 @@ def get_unidades_internacao():
     }
 
 
-@app.get("/internacao/sinais_vitais", 
+@app.get("/hospitais/{id}/internacao/sinais_vitais", 
          summary="Sinais vitais dos pacientes internados",
          tags=["Internações"])
-def get_sinais_vitais():
-    results = mv.sql_file("/api/sql/sinais_vitais.sql", timeout = 60)
+def get_sinais_vitais(id: int, nocache: bool = False):
+    results = sinais_vitais.leituras(cd_multi_empresa = id, nocache = nocache)
     return {
             "code": 200,
             "message": "success",
